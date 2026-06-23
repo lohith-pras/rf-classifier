@@ -4,7 +4,8 @@ Run from the repo root:
 
     uv run python src/pipeline.py
 
-Outputs the confusion matrix and accuracy-vs-SNR curve to notebooks/.
+Outputs confusion matrix, accuracy-vs-SNR curve, and feature-importance
+plot to outputs/.
 """
 
 from pathlib import Path
@@ -12,8 +13,13 @@ from pathlib import Path
 from sklearn.metrics import classification_report
 
 from dataset import build_feature_matrix
-from model import accuracy_vs_snr, split, train_classifier
-from visualise import plot_accuracy_vs_snr, plot_confusion_matrix
+from features import FEATURE_NAMES
+from model import accuracy_vs_snr, high_snr_accuracy, split, train_classifier
+from visualise import (
+    plot_accuracy_vs_snr,
+    plot_confusion_matrix,
+    plot_feature_importance,
+)
 
 OUT_DIR = Path(__file__).resolve().parent.parent / "outputs"
 
@@ -32,12 +38,19 @@ def main():
     y_pred = model.predict(X_test)
 
     acc = model.score(X_test, y_test)
-    print(f"\nOverall test accuracy: {acc:.4f}  (random guess = {1/11:.4f})\n")
+    acc_high = high_snr_accuracy(model, X_test, y_test, snr_test, threshold=6)
+    print(f"\nOverall test accuracy : {acc:.4f}  (random guess = {1/11:.4f})")
+    print(f"High-SNR accuracy (>=6 dB): {acc_high:.4f}\n")
     print(classification_report(y_test, y_pred))
 
     plot_confusion_matrix(
         y_test, y_pred, labels=model.classes_,
         save_path=OUT_DIR / "confusion_matrix.png", show=False,
+    )
+
+    plot_feature_importance(
+        model.feature_importances_, FEATURE_NAMES,
+        save_path=OUT_DIR / "feature_importance.png", show=False,
     )
 
     snr_levels, accuracies = accuracy_vs_snr(model, X_test, y_test, snr_test)

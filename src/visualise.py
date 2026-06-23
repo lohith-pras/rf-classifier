@@ -38,6 +38,24 @@ def plot_confusion_matrix(y_test, y_pred, labels, save_path=None, show=True):
     return fig
 
 
+def plot_feature_importance(importances, feature_names, save_path=None, show=True):
+    """Horizontal bar chart of Random Forest feature importances, sorted."""
+    order = importances.argsort()
+    names = [feature_names[i] for i in order]
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.barh(range(len(order)), importances[order])
+    ax.set_yticks(range(len(order)))
+    ax.set_yticklabels(names)
+    ax.set_xlabel("Importance (mean decrease in impurity)")
+    ax.set_title("Random Forest Feature Importance")
+    plt.tight_layout()
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+    return fig
+
+
 def plot_accuracy_vs_snr(snr_levels, accuracies, save_path=None, show=True):
     """Test accuracy as a function of SNR (the SNR sweep result)."""
     fig, ax = plt.subplots(figsize=(8, 5))

@@ -21,6 +21,17 @@ def train_classifier(X_train, y_train, n_estimators=100, random_state=42):
     return model
 
 
+def high_snr_accuracy(model, X_test, y_test, snr_test, threshold=6):
+    """Test accuracy restricted to samples at or above ``threshold`` dB.
+
+    The pooled all-SNR accuracy is dragged down by deep-noise samples that are
+    near-unclassifiable. This reports the operating regime where the signal is
+    actually present.
+    """
+    mask = snr_test >= threshold
+    return model.score(X_test[mask], y_test[mask])
+
+
 def accuracy_vs_snr(model, X_test, y_test, snr_test):
     """Compute test accuracy at each SNR level.
 
