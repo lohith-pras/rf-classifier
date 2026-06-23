@@ -8,4 +8,9 @@ wheels/
 
 # Virtual environments
 .venv
-data/*
+
+# Dataset + feature cache (not committed — see README for download link)
+data/
+
+# macOS
+.DS_Store
