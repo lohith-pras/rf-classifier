@@ -30,7 +30,7 @@ FEATURE_NAMES = [
 
 
 def extract_features(sample):
-    """Return a length-12 float32 feature vector for one (2, 128) I/Q sample."""
+    """Return a length-16 float32 feature vector for one (2, 128) I/Q sample."""
     i_row = sample[0, :]
     q_row = sample[1, :]
 
